@@ -1,0 +1,9 @@
+.env
+.vscode/
+*.log
+*.tmp
+*.bak
+*.mdf
+*.ldf
+.DS_Store
+Thumbs.db
