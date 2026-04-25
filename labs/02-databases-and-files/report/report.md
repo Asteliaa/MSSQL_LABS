@@ -140,7 +140,7 @@ GO
 Результат запроса к `sys.database_files` показал три файла: `testdata_a.mdf`, `testlog.ldf`, `testdata_b.ndf` с ожидаемыми размерами и путями.[web:226][web:198]
 
 <p align="center">
-  <img src="../screenshots/test-db-files-5.jpg" width="700" alt="Файлы базы данных Test">
+  <img src="../screenshots/test-db-files.jpg" width="700" alt="Файлы базы данных Test">
   <br>
   <em>Рис. 2. Файлы базы данных Test и их размеры.</em>
 </p>
@@ -148,7 +148,7 @@ GO
 Запрос к `sys.filegroups` подтвердил наличие файловых групп `PRIMARY` и `TestFileGroup`, причём `PRIMARY` помечена как файловая группа по умолчанию (`is_default = 1`).[web:226][web:230]
 
 <p align="center">
-  <img src="../screenshots/est-filegroups-2.jpg" width="700" alt="Файловые группы базы Test">
+  <img src="../screenshots/est-filegroups.jpg" width="700" alt="Файловые группы базы Test">
   <br>
   <em>Рис. 3. Файловые группы базы Test: PRIMARY и TestFileGroup.</em>
 </p>
@@ -210,7 +210,7 @@ GO
 ```
 
 <p align="center">
-  <img src="../screenshots/schemas-and-tables-4.jpg" width="700" alt="Таблицы и схемы в базе Test">
+  <img src="../screenshots/schemas-and-tables.jpg" width="700" alt="Таблицы и схемы в базе Test">
   <br>
   <em>Рис. 4. Таблицы в схемах app и external в базе Test.</em>
 </p>
@@ -294,7 +294,7 @@ GO
 ```
 
 <p align="center">
-  <img src="../screenshots/rz-db-tables-3.jpg" width="700" alt="Таблица rz.MY_TABLE в базе RZ_DB">
+  <img src="../screenshots/rz-db-tables.jpg" width="700" alt="Таблица rz.MY_TABLE в базе RZ_DB">
   <br>
   <em>Рис. 5. Таблица rz.MY_TABLE в базе RZ_DB (именованный экземпляр).</em>
 </p>
