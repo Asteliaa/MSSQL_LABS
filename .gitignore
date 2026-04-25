@@ -7,3 +7,4 @@
 *.ldf
 .DS_Store
 Thumbs.db
+docker/backups/
