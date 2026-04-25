@@ -95,9 +95,9 @@ cd ..
 
 После запуска оба контейнера должны находиться в состоянии `Up`.
 
-![Запуск контейнеров SQL Server](../screenshots/docker compose up -d.png)
+![Запуск контейнеров SQL Server](../screenshots/docker-compose-up.png)
 
-![Проверка состояния контейнеров](../screenshots/docker compose ps.png)
+![Проверка состояния контейнеров](../screenshots/docker-compose-ps.png)
 
 ## Подключение к экземпляру по умолчанию
 
