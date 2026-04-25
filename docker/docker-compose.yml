@@ -12,6 +12,7 @@ services:
       - "1433:1433"
     volumes:
       - mssql-default-data:/var/opt/mssql
+      - ./backups:/var/opt/mssql/backups
     restart: unless-stopped
 
   mssql_named:
@@ -25,6 +26,7 @@ services:
       - "1434:1433"
     volumes:
       - mssql-named-data:/var/opt/mssql
+      - ./backups:/var/opt/mssql/backups
     restart: unless-stopped
 
 volumes:

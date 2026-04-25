@@ -294,7 +294,7 @@ GO
 ```
 
 <p align="center">
-  <img src="../screenshots/rz-db-tables.jpg" width="700" alt="Таблица rz.MY_TABLE в базе RZ_DB">
+  <img src="../screenshots/rz-db-tables.png" width="700" alt="Таблица rz.MY_TABLE в базе RZ_DB">
   <br>
   <em>Рис. 5. Таблица rz.MY_TABLE в базе RZ_DB (именованный экземпляр).</em>
 </p>

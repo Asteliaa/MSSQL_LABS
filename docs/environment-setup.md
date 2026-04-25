@@ -1,180 +1,138 @@
-# Настройка окружения для лабораторных работ по администрированию Microsoft SQL Server в Docker
+# Настройка окружения MSSQL Lab (Ubuntu + Docker)
 
-Этот документ описывает подготовку рабочего окружения для выполнения лабораторных работ по администрированию Microsoft SQL Server в Docker. Окружение строится вокруг Docker, терминала VS Code, Git/GitHub и структуры проекта, в которой каждая лабораторная работа хранится отдельно вместе с командами, скриптами, отчётом и скриншотами. Идея такого подхода совпадает с практикой воспроизводимой работы через Git-репозитории и удобной интеграцией Git в VS Code.
+Документ описывает единый, воспроизводимый способ подготовки окружения для лабораторных работ по администрированию Microsoft SQL Server. Исходные задания ориентированы на Hyper-V, Windows Server и SSMS, но в этом проекте они выполняются на Ubuntu через Docker и sqlcmd.
 
-## Цель подготовки окружения
+## Цель
 
-Перед началом выполнения лабораторных работ необходимо подготовить единое окружение, в котором будут храниться исходные файлы, команды, отчёты и Docker-конфигурация. Такой подход упрощает повторяемость шагов, позволяет отслеживать изменения через Git и отделяет настройку инфраструктуры от выполнения самих лабораторных заданий.
+Подготовить рабочее окружение, в котором можно линейно выполнять лабораторные работы, хранить команды и скрипты в Git и при необходимости быстро восстановить состояние контейнеров SQL Server.
 
-## Что должно быть установлено
+## Что используется
 
-Для начала работы понадобятся следующие инструменты:
+- Ubuntu Linux.
+- Docker Engine и Docker Compose Plugin.
+- Git.
+- Visual Studio Code.
+- Два контейнера SQL Server 2022 Developer:
+	- `mssql-default` на порту `1433`.
+	- `mssql-named` на порту `1434`.
 
-- Docker Desktop или Docker Engine для запуска контейнеров SQL Server.
-- Visual Studio Code как основная среда работы с файлами проекта, терминалом и Git.
-- Git для ведения истории изменений и публикации репозитория на GitHub.
-- SQL-клиент для подключения к экземплярам SQL Server: SSMS, Azure Data Studio или DBeaver.
-
-## Шаг 1. Установка Docker
-
-Docker нужен для запуска контейнеров с SQL Server вместо развёртывания виртуальной машины. Microsoft поддерживает сценарий запуска и подключения к SQL Server в контейнере, включая проброс портов и конфигурирование параметров окружения.
-
-### Windows
-
-1. Скачай и установи Docker Desktop.
-2. Убедись, что включён WSL2 или Hyper-V, если этого требует установщик.
-3. После установки запусти Docker Desktop и дождись статуса `Engine running`.
-
-### Linux
-
-1. Установи Docker Engine и Docker Compose Plugin.
-2. Добавь своего пользователя в группу `docker`, чтобы запускать команды без `sudo`.
-3. Проверь работу командой:
+## Быстрая проверка prerequisites
 
 ```bash
 docker --version
 docker compose version
-```
-
-Проверка версий нужна, чтобы убедиться, что Docker CLI и compose доступны из терминала, который будет использоваться в VS Code.
-
-## Шаг 2. Установка Visual Studio Code
-
-VS Code нужен как единая точка работы: редактирование Markdown, SQL и YAML-файлов, работа с Git и запуск команд в терминале. Встроенная поддержка Source Control и GitHub позволяет создавать и публиковать репозитории прямо из редактора или терминала.
-
-После установки рекомендуется добавить следующие расширения:
-
-- Docker
-- GitHub Pull Requests and Issues
-- Markdown All in One
-- SQLTools или MSSQL
-- YAML
-
-## Шаг 3. Установка Git
-
-Git нужен для фиксации истории работы, ведения репозитория и отправки файлов на GitHub. Репозиторий удобнее вести как «лабораторный журнал», в котором сохраняются и инфраструктурные файлы, и отчёты, и реальные команды выполнения.
-
-Проверь установку:
-
-```bash
 git --version
+code --version
 ```
 
-Если Git установлен впервые, выполни начальную настройку:
+Если `docker` запускается только через `sudo`, добавь пользователя в группу `docker` и перезайди в сессию:
 
 ```bash
-git config --global user.name "ТВОЁ_ИМЯ"
-git config --global user.email "ТВОЙ_EMAIL"
+sudo usermod -aG docker "$USER"
+newgrp docker
 ```
 
-## Шаг 4. Установка клиента для SQL Server
+## Подготовка проекта
 
-Для подключения к контейнерам SQL Server можно использовать SQL Server Management Studio, Azure Data Studio или другой совместимый клиент. Для Docker-сценария важно, чтобы клиент умел подключаться к `localhost,порт`, потому что разные экземпляры SQL Server будут различаться именно по портам.
-
-Рекомендуемый минимум:
-
-- Windows: SSMS.
-- Linux/macOS: Azure Data Studio или DBeaver.
-
-## Шаг 5. Создание рабочей папки проекта
-
-Открой терминал в VS Code или системный терминал и создай корневую папку проекта:
+Если репозиторий уже клонирован, просто открой его в VS Code. Если нет:
 
 ```bash
-mkdir mssql-administration-labs
-cd mssql-administration-labs
+git clone https://github.com/USERNAME/mssql-lab.git
+cd mssql-lab
 code .
 ```
 
-Эта команда создаёт основу репозитория и сразу открывает её в VS Code для дальнейшей работы через встроенный терминал и редактор.
+## Конфигурация Docker
 
-## Шаг 6. Инициализация структуры проекта
+В проекте используется простой `docker/docker-compose.yml` с двумя экземплярами SQL Server:
 
-Структура проекта уже была создана следующими командами:
+- `mssql-default` на `1433`.
+- `mssql-named` на `1434`.
 
-```bash
-mkdir -p docker/init docker/backups
-mkdir -p docs
-mkdir -p labs/01-installation/{report,commands,scripts,screenshots}
-mkdir -p labs/02-databases-and-files/{report,commands,scripts,screenshots}
-mkdir -p labs/03-backup-and-recovery/{report,commands,scripts,screenshots}
-mkdir -p labs/04-security/{report,commands,scripts,screenshots}
-mkdir -p labs/05-automation/{report,commands,scripts,screenshots}
-mkdir -p labs/06-replication-ha/{report,commands,scripts,screenshots}
-mkdir -p labs/07-monitoring/{report,commands,scripts,screenshots}
-mkdir -p assets/templates
-touch README.md .gitignore docs/environment-setup.md docs/execution-plan.md
-touch labs/01-installation/README.md labs/01-installation/report/report.md
-touch labs/02-databases-and-files/README.md labs/02-databases-and-files/report/report.md
-touch labs/03-backup-and-recovery/README.md labs/03-backup-and-recovery/report/report.md
-touch labs/04-security/README.md labs/04-security/report/report.md
-touch labs/05-automation/README.md labs/05-automation/report/report.md
-touch labs/06-replication-ha/README.md labs/06-replication-ha/report/report.md
-touch labs/07-monitoring/README.md labs/07-monitoring/report/report.md
-```
+Для учебной работы этого достаточно и не требует дополнительной подготовки `.env`.
 
-Такая структура отделяет общую документацию от лабораторных работ и инфраструктурных файлов Docker. Отдельные каталоги для отчётов, команд, скриптов и скриншотов соответствуют хорошей практике структурирования репозиториев для исследовательской и лабораторной работы.
-
-## Шаг 7. Инициализация Git-репозитория
-
-Из корня проекта выполни:
+## Запуск окружения
 
 ```bash
-git init
+cd docker
+docker compose up -d
+docker compose ps
 ```
 
-Затем создай `.gitignore` и добавь базовые исключения:
+Ожидаемый результат:
 
-```gitignore
-.env
-.vscode/
-*.log
-*.tmp
-*.bak
-*.mdf
-*.ldf
-.DS_Store
-Thumbs.db
-```
+- запущены контейнеры `mssql-default` и `mssql-named`;
+- порты проброшены как `1433->1433` и `1434->1433`.
 
-После этого можно сделать первый коммит:
+## Проверка готовности SQL Server
+
+Проверь, что серверы принимают подключения, выполнив простой запрос в каждом контейнере:
 
 ```bash
-git add .
-git commit -m "Initial project structure for MSSQL administration labs"
+docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
+	-S localhost -U SA -P "Strong_Passw0rd!" -C \
+	-Q "SELECT @@SERVERNAME AS server_name, @@VERSION AS version_info;"
+
+docker exec -i mssql-named /opt/mssql-tools18/bin/sqlcmd \
+	-S localhost -U SA -P "Strong_Passw0rd!" -C \
+	-Q "SELECT @@SERVERNAME AS server_name, @@VERSION AS version_info;"
 ```
 
-Git-репозиторий позволит фиксировать этапы работы, а VS Code поддерживает отображение изменений и коммитов прямо в панели Source Control.
+## Проверка каталога резервных копий
 
-## Шаг 8. Создание удалённого репозитория на GitHub
+В проекте каталог `docker/backups/` смонтирован в оба контейнера по пути `/var/opt/mssql/backups`. Это нужно для лабораторных по backup/restore.
 
-После создания локального репозитория можно связать его с GitHub. Обычно это делается через новый пустой репозиторий на GitHub и последующую привязку удалённого адреса.
-
-Команды привязки:
+Проверка:
 
 ```bash
-git remote add origin https://github.com/USERNAME/mssql-administration-labs.git
-git branch -M main
-git push -u origin main
+ls -la ./backups
+docker exec -i mssql-default ls -la /var/opt/mssql/backups
 ```
 
-## Шаг 9. Подготовка Docker-конфигурации
+## Базовые операции управления контейнерами
 
-Следующий обязательный файл после инициализации структуры — `docker/docker-compose.yml`, потому что именно он будет поднимать контейнеры SQL Server для выполнения лабораторных работ. Официальная документация Microsoft описывает развёртывание SQL Server в Docker через переменные среды, проброс порта и использование volume для хранения данных.
+```bash
+cd docker
 
-Минимальный состав `docker/`:
+# остановить только default экземпляр
+docker compose stop mssql_default
 
-- `docker-compose.yml`
-- `.env`
-- `init/`
-- `backups/`
+# запустить снова
+docker compose start mssql_default
 
-## Шаг 10. Проверка, что окружение готово
+# остановить все контейнеры
+docker compose down
 
-Перед переходом к первой лабораторной работе нужно убедиться, что:
+# поднять снова
+docker compose up -d
+```
 
-- Docker запускается без ошибок.
-- VS Code открывает проект и видит структуру каталогов.
-- Git работает, а репозиторий инициализирован.
-- Есть SQL-клиент для подключения к будущим контейнерам SQL Server.
-- В проекте уже созданы `docs/environment-setup.md` и `docs/execution-plan.md`, которые будут использоваться как базовая документация.
+## Типовые проблемы и диагностика
+
+1. Ошибка логина `Login failed for user 'SA'`.
+Проверь пароль в `docker/docker-compose.yml`, затем перезапусти контейнеры.
+
+2. Порт `1433` или `1434` занят.
+Измени проброс портов в `docker/docker-compose.yml` и снова запусти `docker compose up -d`.
+
+3. Контейнер долго стартует после первого запуска.
+Проверь логи:
+
+```bash
+docker logs mssql-default | tail -n 50
+docker logs mssql-named | tail -n 50
+```
+
+4. Команда `docker exec ... sqlcmd` не найдена.
+Убедись, что используешь путь `/opt/mssql-tools18/bin/sqlcmd` внутри контейнера.
+
+## Definition of Done для окружения
+
+Окружение считается готовым, если:
+
+1. `docker compose ps` показывает оба контейнера в состоянии Up.
+2. Запрос `SELECT @@VERSION` выполняется в `mssql-default` и `mssql-named`.
+3. Каталог `/var/opt/mssql/backups` доступен внутри контейнеров.
+4. Ты можешь остановить и снова запустить любой экземпляр через `docker compose stop/start`.
+
+После этого можно переходить к лабораторным сценариям из `labs/`.
