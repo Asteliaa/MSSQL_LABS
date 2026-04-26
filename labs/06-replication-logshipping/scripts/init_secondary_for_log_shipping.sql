@@ -1,10 +1,6 @@
--- 02-secondary-init.sql
--- Инициализация базы Test на вторичном сервере для log shipping
-
 USE master;
 GO
 
--- Если база Test уже существует на secondary, переводим в SINGLE_USER и удаляем
 IF DB_ID(N'Test') IS NOT NULL
 BEGIN
     ALTER DATABASE Test SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
