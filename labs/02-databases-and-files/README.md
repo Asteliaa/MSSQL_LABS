@@ -1,56 +1,31 @@
-# Lab 02 — Управление базами данных и файлами
+# Lab 02 — Database and File Management
 
-## Тема и исходное задание
+## Topic
 
-**Тема:** управление базами данных и файлами в Microsoft SQL Server.
+Managing databases and files in Microsoft SQL Server: data files, filegroups, schemas and tables in a default and a named instance.
 
-**Исходное задание (по методичке):**
+## Original task (short)
 
-1. В экземпляре SQL Server по умолчанию, используя SQL Server Management Studio, создать базу данных `Test`:
-   - сохранить данные в файле `testdata_a` размером 4 MB;
-   - настроить автоувеличение файла на 2 MB при достижении лимита, максимальный размер 10 MB.
-2. Создать файловую группу `TestFileGroup`.
-3. Создать вторичный файл данных `testdata_b.ndf` размером 5 MB.
-4. Настроить автоувеличение `testdata_b` на 2 MB при достижении лимита, без ограничения максимального размера.
-5. Добавить `testdata_b` в файловую группу `TestFileGroup`.
-6. В именованном экземпляре SQL Server с использованием Transact‑SQL создать базу данных, содержащую в идентификаторе инициалы (в работе — `RZ_DB`).
-7. В созданных базах данных:
-   - создать произвольную схему;
-   - создать таблицу `TABLE_1` (через SSMS) и добавить её в схему;
-   - создать таблицу `TABLE_2` (Transact‑SQL) с явным указанием файловой группы;
-   - создать таблицу (Transact‑SQL) в новой схеме, не принадлежащей текущему пользователю.
+- Create database `Test` in the default instance with:
+  - primary data file `testdata_a` (4 MB, autogrowth 2 MB, max 10 MB),
+  - secondary data file `testdata_b.ndf` (5 MB, autogrowth 2 MB, unlimited size),
+  - additional filegroup `TestFileGroup` containing `testdata_b`.
+- In the named instance, create database `RZ_DB` (name includes initials).
+- In `Test` and `RZ_DB`, create schemas and tables, including a table on a specific filegroup and a table in a schema that does not belong to the current user.
 
-## Адаптация под Docker и sqlcmd
+## Docker adaptation
 
-Выполнение лабораторной работы перенесено в среду Docker на Ubuntu:
+- Default instance → container `mssql-default` (port 1433), database `Test`.
+- Named instance → container `mssql-named` (port 1434), database `RZ_DB`.
+- All actions are performed using T‑SQL scripts executed via `sqlcmd` inside Docker containers, instead of SSMS.
 
-- экземпляр по умолчанию реализован как контейнер `mssql-default` (порт 1433);
-- именованный экземпляр — контейнер `mssql-named` (порт 1434);
-- вместо SSMS используется консольная утилита `sqlcmd` внутри Docker‑контейнеров.
+## Folder structure
 
-Соответствие элементов задания:
-
-- «экземпляр по умолчанию» → `mssql-default`, база `Test`;
-- «именованный экземпляр» → `mssql-named`, база `RZ_DB`;
-- все операции выполняются с помощью T‑SQL‑скриптов и команд `docker exec` вместо графического интерфейса.
-
-## Структура лабораторной
-
-- `commands/` — команды Docker и sqlcmd, использованные при выполнении работы:
-  - `01-create-test-db-default.md` — создание базы `Test` и файлов;
-  - `02-create-rz-db-named.md` — создание базы `RZ_DB`;
-  - `03-create-tables-and-schemas.md` — создание схем и таблиц в `Test` и `RZ_DB`;
-  - `04-verify-files-and-filegroups.md` — проверка файлов, файловых групп и таблиц.
-- `scripts/` — T‑SQL‑скрипты:
-  - `05-create-test-db-default.sql` — создание базы `Test`, файлов `testdata_a` и `testdata_b`, файловой группы `TestFileGroup`;
-  - `06-create-rz-db-named.sql` — создание базы `RZ_DB`;
-  - `07-create-tables-and-schemas.sql` — создание схем `app`, `external`, `rz` и таблиц `TABLE_1`, `TABLE_2`, `TABLE_3`, `MY_TABLE`;
-  - `08-verify-files-and-filegroups.sql` — запросы для проверки файлов, файловых групп и таблиц.
-- `report/` — оформленный отчёт по лабораторной работе:
-  - `report.md`.
-- `screenshots/` — скриншоты выполнения запросов в терминале:
-  - `db_create.jpg` — создание баз `Test` и `RZ_DB`;
-  - `test-db-files-5.jpg` — информация о файлах базы `Test`;
-  - `est-filegroups-2.jpg` — список файловых групп базы `Test`;
-  - `schemas-and-tables-4.jpg` — списки таблиц и схем в `Test`;
-  - `rz-db-tables-3.jpg` — таблица `rz.MY_TABLE` в базе `RZ_DB`.
+```text
+labs/02-databases-and-files/
+  README.md                     ← this file
+  REPORT.md                     ← detailed lab report
+  lab02_commands.md             ← Docker + sqlcmd commands
+  scripts/                      ← T‑SQL scripts for this lab
+  screenshots/                  ← evidence (sqlcmd output, metadata)
+```
