@@ -2,7 +2,7 @@
 
 ## Topic
 
-Disaster recovery, full/differential/log backups and database restore scenarios in Microsoft SQL Server using Docker and `sqlcmd`.[file:2]
+Disaster recovery, full/differential/log backups and database restore scenarios in Microsoft SQL Server using Docker and `sqlcmd`.
 
 ## Original task (short)
 
@@ -17,14 +17,14 @@ Disaster recovery, full/differential/log backups and database restore scenarios 
 - Simulate a logical error using a transaction log backup:
   - show any table, delete several rows,
   - restore the database to its original state using backup and log backup.
-- Propose a backup strategy for a real‑estate company with 5 working days and describe the recovery process after a server failure on Wednesday morning.[file:2]
+- Propose a backup strategy for a real‑estate company with 5 working days and describe the recovery process after a server failure on Wednesday morning.
 
 ## Docker adaptation
 
 - Default instance → container `mssql-default` (system databases + user database `Test`).
-- Named instance → container `mssql-named` (database `RZ_DB` and restored `Test_from_default`).[cite:26]
+- Named instance → container `mssql-named` (database `RZ_DB` and restored `Test_from_default`).
 - Backup directory inside containers: `/var/opt/mssql/backups`, mapped to `docker/backups/` on the host.
-- All operations are performed using `sqlcmd` inside containers and `docker exec` commands, without SSMS.[cite:26]
+- All operations are performed using `sqlcmd` inside containers and `docker exec` commands, without SSMS.
 
 ## Folder structure
 
