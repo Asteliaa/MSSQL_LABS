@@ -1,50 +1,37 @@
-# Lab 04 — Управление безопасностью
+# Lab 04 — Security Management
 
-## Тема и исходное задание
+## Topic
 
-**Тема:** управление безопасностью в Microsoft SQL Server: логины, пользователи, роли и права.
+Managing security in Microsoft SQL Server: logins, database users, roles and permissions in a Docker‑based environment.
 
-**Исходное задание (по методичке):**
+## Original task (short)
 
-1. Создать для выполнения заданий базу данных `Test`.
-2. Изменить режим проверки подлинности сервера на смешанный (Windows + SQL Server Authentication).
-3. Создать логин `TestLogin1` с аутентификацией SQL Server, задать пароль:
-   - добавить логин `TestLogin1` в фиксированную серверную роль `sysadmin`;
-   - установить базу данных `Test` как базу по умолчанию.
-4. Создать логин `TestLogin2` и пользователей базы `Test`:
-   - `TestUser1` для логина `TestLogin1`;
-   - `TestUser2` для логина `TestLogin2`.
-5. Создать в базе `Test` пользовательские роли `Manager` и `Employee`:
-   - назначить пользователю `TestUser1` роль `Manager`;
-   - назначить пользователю `TestUser2` роль `Employee`;
-   - запретить для роли `Employee` изменение пользователя `guest`;
-   - создать новую роль и запретить ей обновлять таблицы в базе.
-6. Пункт 4.1: создать таблицу в новой схеме базы `Test`, принадлежащей пользователю `TestUser1` (Transact‑SQL).
-7. Пункт 4.2: создать в базе `Test` пользователей `User1` и `User2`, добавить их в роль `Manager` и несколькими способами запретить им выборку данных из таблицы, созданной в п.4.1.
+- Create database `Test` for the exercises.
+- Switch the server authentication mode to Mixed (Windows + SQL Server Authentication).
+- Create SQL login `TestLogin1`, set a password, add it to fixed server role `sysadmin`, and set `Test` as its default database.
+- Create SQL login `TestLogin2` and database users `TestUser1` and `TestUser2` in `Test`, mapped to logins `TestLogin1` and `TestLogin2`.
+- In database `Test`:
+  - create database roles `Manager` and `Employee`,
+  - assign `Manager` to `TestUser1`, `Employee` to `TestUser2`,
+  - deny `Employee` the ability to alter the `guest` user,
+  - create another role and deny it the ability to update tables.
+- Task 4.1: create a table in a new schema in `Test` owned by `TestUser1` (Transact‑SQL).
+- Task 4.2: create users `User1` and `User2` in `Test`, add them to role `Manager`, and by several methods (including T‑SQL) deny them selecting data from the table created in Task 4.1.
 
-## Адаптация под Docker и sqlcmd
+## Docker adaptation
 
-База данных `Test` используется из предыдущих лабораторных работ. Все действия по управлению безопасностью выполняются в контейнере `mssql-default` с помощью утилиты `sqlcmd`:[web:23][web:284]
+- Default instance is implemented as the `mssql-default` container, which hosts the `Test` database created in previous labs.
+- Server authentication mode in the SQL Server Docker image is already configured as Mixed, so SQL Server logins such as `TestLogin1` and `TestLogin2` can be used.
+- All administration tasks are performed via the `sqlcmd` utility inside the container instead of SSMS.
+- Database scripts are stored in the project under `labs/04-security/scripts/` and mounted into the container as `/var/opt/mssql/scripts/04-security/scripts/`.
 
-```bash
-docker exec -it mssql-default /opt/mssql-tools18/bin/sqlcmd \
-  -S localhost -U SA -P "Strong_Passw0rd!" -C
+## Folder structure
+
+```text
+labs/04-security/
+  README.md                         ← this file
+  REPORT.md                         ← detailed lab report
+  lab04_commands.md                 ← Docker + sqlcmd commands for this lab
+  scripts/                          ← T‑SQL scripts
+  screenshots/                      ← evidence (sqlcmd output, role membership, permission errors)
 ```
-
-Вместо настройки режима проверки подлинности через SSMS используется заранее сконфигурированный смешанный режим в Docker‑образе SQL Server.
-
-## Структура лабораторной
-
-- `commands/` — последовательность команд Docker и `sqlcmd`:
-  - `01-logins-and-users.md` — создание логинов `TestLogin1`, `TestLogin2` и пользователей `TestUser1`, `TestUser2`;
-  - `02-roles-and-permissions.md` — создание ролей `Manager`, `Employee`, `NoUpdate` и настройка прав;
-  - `03-schema-and-table-for-testuser1.md` — создание схемы `mgr` и таблицы `mgr.Orders`;
-  - `04-manager-users-and-deny-select.md` — создание пользователей `User1`, `User2`, добавление в роль `Manager` и запрет SELECT.
-- `scripts/` — T‑SQL‑скрипты:
-  - `05-logins-and-users.sql`;
-  - `06-roles-and-permissions.sql`;
-  - `07-schema-and-table-for-testuser1.sql`;
-  - `08-manager-users-and-deny-select.sql`.
-- `report/` — оформленный отчёт по лабораторной:
-  - `report.md`.
-- `screenshots/` — скриншоты выполнения ключевых команд и проверок.

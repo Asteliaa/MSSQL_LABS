@@ -14,6 +14,7 @@ services:
     volumes:
       - mssql-default-data:/var/opt/mssql
       - ./backups:/var/opt/mssql/backups
+      - ../labs:/var/opt/mssql/scripts
     restart: unless-stopped
 
   mssql_named:
@@ -28,6 +29,7 @@ services:
     volumes:
       - mssql-named-data:/var/opt/mssql
       - ./backups:/var/opt/mssql/backups
+      - ../labs:/var/opt/mssql/scripts
     restart: unless-stopped
 
 volumes:
