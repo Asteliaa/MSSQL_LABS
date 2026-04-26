@@ -72,7 +72,6 @@ EXEC sp_add_jobserver
     @server_name = N'(LOCAL)';
 GO
 
--- Job 2: heartbeat каждые 2 минуты
 IF NOT EXISTS (SELECT 1 FROM msdb.dbo.sysjobs WHERE name = N'Job_InsertHeartbeat')
 BEGIN
     EXEC sp_add_job

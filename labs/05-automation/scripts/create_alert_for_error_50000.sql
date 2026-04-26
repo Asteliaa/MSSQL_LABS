@@ -1,9 +1,6 @@
 USE msdb;
 GO
 
---------------------------------------------------
--- 1. Задание, которое будет выполняться при Alert
---------------------------------------------------
 IF NOT EXISTS (SELECT 1 FROM msdb.dbo.sysjobs WHERE name = N'Job_OnSeverity16')
 BEGIN
     EXEC sp_add_job
@@ -13,7 +10,6 @@ BEGIN
 END;
 GO
 
--- Шаг: записать событие в JobLog
 IF NOT EXISTS (
     SELECT 1
     FROM msdb.dbo.sysjobsteps
@@ -35,7 +31,6 @@ BEGIN
 END;
 GO
 
--- Привязка job к серверу (если нужно)
 IF NOT EXISTS (
     SELECT 1
     FROM msdb.dbo.sysjobservers s
@@ -49,20 +44,16 @@ BEGIN
 END;
 GO
 
---------------------------------------------------
--- 2. Alert на message_id = 50000 в базе Test
---    с запуском Job_OnSeverity16
---------------------------------------------------
 IF NOT EXISTS (SELECT 1 FROM msdb.dbo.sysalerts WHERE name = N'Alert_Error50000_Test')
 BEGIN
     EXEC sp_add_alert
-        @name                       = N'Alert_Error50000_Test',
-        @message_id                 = 50000,      -- стандартный msg_id для RAISERROR('text',...)
-        @severity                   = 0,          -- 0, если используем message_id
-        @enabled                    = 1,
-        @delay_between_responses    = 0,
+        @name = N'Alert_Error50000_Test',
+        @message_id = 50000,     
+        @severity = 0,       
+        @enabled = 1,
+        @delay_between_responses = 0,
         @include_event_description_in = 1,
-        @database_name              = N'Test',
-        @job_name                   = N'Job_OnSeverity16';
+        @database_name = N'Test',
+        @job_name = N'Job_OnSeverity16';
 END;
 GO
