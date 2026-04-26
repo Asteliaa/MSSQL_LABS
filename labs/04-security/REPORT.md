@@ -9,7 +9,7 @@
 
 ## Original assignment
 
-The original lab assignment required the following tasks:[1]
+The original lab assignment required the following tasks:
 
 1. Create a database `Test` for the exercises.
 2. Change the server authentication mode to Mixed (Windows + SQL Server Authentication).
@@ -30,9 +30,9 @@ The original lab assignment required the following tasks:[1]
 
 ## Environment and setup
 
-The lab is executed in Docker on Ubuntu. The default SQL Server instance is provided by the `mssql-default` container, which hosts the `Test` database created in earlier labs.[2]
+The lab is executed in Docker on Ubuntu. The default SQL Server instance is provided by the `mssql-default` container, which hosts the `Test` database created in earlier labs.
 
-Authentication mode in the SQL Server Docker image is configured as Mixed, so SQL Server logins (`TestLogin1`, `TestLogin2`, etc.) can be created and used.[2]
+Authentication mode in the SQL Server Docker image is configured as Mixed, so SQL Server logins (`TestLogin1`, `TestLogin2`, etc.) can be created and used.
 
 All scripts are stored under `labs/04-security/scripts/` in the project and are mounted into the container as `/var/opt/mssql/scripts/04-security/scripts/`.  
 Connections are made with `sqlcmd` as the `SA` login:
@@ -396,4 +396,4 @@ In this lab:
 - Custom roles `Manager`, `Employee` and `NoUpdate` were created in `Test`, with appropriate membership and permission restrictions, including `DENY ALTER` on the `guest` user for `Employee` and `DENY UPDATE` for `NoUpdate`.
 - A new schema `mgr` owned by `TestUser1` and a table `mgr.Orders` were created, meeting the requirements of Task 4.1.
 - Additional users `User1` and `User2` were created and added to role `Manager`, and two different mechanisms (direct user‑level DENY and role‑based DENY) were used to deny them `SELECT` on `mgr.Orders`, fulfilling Task 4.2.
-- All operations were performed using Transact‑SQL and the `sqlcmd` utility in a Docker‑hosted SQL Server instance, demonstrating that security administration tasks can be executed without SSMS.[4][5]
+- All operations were performed using Transact‑SQL and the `sqlcmd` utility in a Docker‑hosted SQL Server instance, demonstrating that security administration tasks can be executed without SSMS.
