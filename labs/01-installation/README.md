@@ -1,37 +1,30 @@
-# Lab 01 — Installation
+# Lab 01 — SQL Server Installation in Docker
 
-## Тема
+## Topic
 
-Установка Microsoft SQL Server в Docker (адаптация задания по установке Microsoft SQL Server 2012 Database).
+Installing two SQL Server instances in Docker on Ubuntu and connecting with `sqlcmd`.
 
-## Исходное задание
+## Original task (short)
 
-1. Создать виртуальную машину VM1 в Hyper-V.
-2. Конфигурация VM1: 1 CPU, 1024 MB RAM, 30 GB HDD, Windows Server 2012.
-3. Установить один экземпляр Microsoft SQL Server Database по умолчанию на VM1.
-4. Ознакомиться с интерфейсом SQL Server Management Studio.
-5. Просмотреть основные свойства экземпляра сервера.
-6. Произвести остановку и запуск сервера.
-7. Установить второй (именованный) экземпляр сервера баз данных на VM1.
-8. Настроить второй экземпляр SQL Server для подключения через определённый порт.
+- Deploy a default SQL Server instance.
+- Deploy a second (named) instance.
+- Check instance properties.
+- Stop and start the database engine.
 
-## Адаптация под Docker и Ubuntu
+## Docker adaptation
 
-Поскольку лабораторная работа выполняется полностью в терминале Ubuntu и в Docker, исходное задание адаптируется следующим образом:
+- Two instances are implemented as containers:
+  - `mssql-default` → default instance on port 1433.
+  - `mssql-named` → second instance on port 1434.
+- Administration is done via `sqlcmd` inside containers.
+- Engine stop/start is done via `docker compose stop/start` for `mssql_default`.
 
-- VM1 заменяется на хост-машину с Ubuntu и Docker.
-- Экземпляр по умолчанию реализован как контейнер `mssql-default`, использующий порт `1433`.
-- Второй экземпляр реализован как контейнер `mssql-named`, доступный через порт `1434` на хосте.
-- Вместо SQL Server Management Studio используется терминальная утилита `sqlcmd`.
-- Остановка и запуск сервера выполняются командами `docker compose stop/start`.
+## Folder structure
 
-## Структура лабораторной
-
-- `commands/` — пошаговые команды, выполнявшиеся в терминале.
-- `scripts/` — SQL-скрипты для проверки экземпляров SQL Server.
-- `report/` — оформленный отчёт по лабораторной работе.
-- `screenshots/` — скриншоты вывода команд и подтверждения выполнения.
-
-## Итог выполнения
-
-В рамках лабораторной работы были развёрнуты два экземпляра SQL Server в Docker, выполнено подключение через `sqlcmd`, получена информация о версии и системных базах данных, а также отработаны команды остановки и запуска контейнера с экземпляром по умолчанию.
+```text
+labs/01-installation/
+  README.md          ← this file
+  REPORT.md          ← detailed lab report
+  scripts/           ← T‑SQL scripts for checks
+  screenshots/       ← evidence (docker, sqlcmd output)
+```

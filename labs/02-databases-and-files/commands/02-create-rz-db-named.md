@@ -1,4 +1,4 @@
-# Создание базы RZ_DB в именованном экземпляре (mssql-named)
+# Создание базы RZ_DB в mssql-named
 
 ```bash
 cd docker
