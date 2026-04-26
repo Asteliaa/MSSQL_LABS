@@ -1,4 +1,4 @@
-USE [master];
+USE master;
 GO
 
 SELECT 
@@ -8,6 +8,7 @@ SELECT
 FROM sys.dm_exec_requests r
 CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) st
 CROSS APPLY sys.dm_exec_query_plan(r.plan_handle) qp;
+GO
 
 SELECT TOP 10
     wait_type, 
@@ -16,6 +17,7 @@ SELECT TOP 10
 FROM sys.dm_os_wait_stats
 WHERE wait_type NOT IN ('CLR_SEMAPHORE','LAZYWRITER_SLEEP','RESOURCE_QUEUE','SLEEP_TASK')
 ORDER BY wait_time_ms DESC;
+GO
 
 USE [ProjectDB];
 GO
