@@ -87,7 +87,7 @@ A verification query against `sys.tables` and `sys.schemas` confirms that `rz.MY
 
 ## Scripts used
 
-- `scripts/create_test_database.sql` — creates the `Test` database, primary and secondary data files, and the `TestFileGroup` filegroup.[cite:42]
+- `scripts/create_test_database.sql` — creates the `Test` database, primary and secondary data files, and the `TestFileGroup` filegroup.
 - `scripts/create_rz_database.sql` — creates the `RZ_DB` database in the named instance.
 - `scripts/create_schemas_and_tables.sql` — creates schemas `app`, `external`, `rz` and tables `TABLE_1`, `TABLE_2`, `TABLE_3`, `MY_TABLE`.
 - `scripts/verify_files_filegroups_and_tables.sql` — verifies files, filegroups and table placement in `Test`.
