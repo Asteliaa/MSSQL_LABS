@@ -1,0 +1,25 @@
+CREATE ENDPOINT MirroringEndpoint
+    STATE = STARTED
+    AS TCP (LISTENER_PORT = 5022)
+    FOR DATABASE_MIRRORING (ROLE = ALL);
+GO
+
+ALTER DATABASE Test SET RECOVERY FULL;
+GO
+
+ALTER DATABASE Test
+SET PARTNER = 'TCP://principal-server:5022';
+GO
+
+ALTER DATABASE Test
+SET PARTNER = 'TCP://mirror-server:5022';
+GO
+
+CREATE DATABASE Test2_Snapshot
+ON
+(
+    NAME = N'Test2_data',
+    FILENAME = N'/var/opt/mssql/data/Test2_Snapshot.ss'
+)
+AS SNAPSHOT OF Test2;
+GO

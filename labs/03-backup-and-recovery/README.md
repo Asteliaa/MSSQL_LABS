@@ -1,62 +1,38 @@
-# Lab 03 — Аварийное восстановление, резервное копирование и восстановление
+# Lab 03 — Backup and Recovery
 
-## Тема и исходное задание
+## Topic
 
-**Тема:** аварийное восстановление, резервное копирование и восстановление баз данных Microsoft SQL Server.
+Disaster recovery, full/differential/log backups and database restore scenarios in Microsoft SQL Server using Docker and `sqlcmd`.[file:2]
 
-**Исходное задание (по методичке):**
+## Original task (short)
 
-1. Перед выполнением последующих заданий выполнить резервное копирование базы данных `master` на сменный носитель информации.
-2. Используя базу данных `Test`, созданную в задании 2:
-   - создать файл резервной копии БД `Test`;
-   - открыть файл данных БД `Test` в редакторе и изменить несколько байт;
-   - сделать попытку подключения к БД `Test`;
-   - восстановить БД `Test` из файла резервной копии с помощью процедуры `RESTORE`.
-3. Повторить операции резервного копирования и восстановления, но в качестве источника для резервной копии указать другой экземпляр сервера.
-4. Привести пример настройки зеркальной копии любой БД в экземпляре SQL Server.
-5. Привести пример создания моментального снимка БД `Test2` с помощью инструкции Transact‑SQL.
-6. Смоделировать ситуацию с использованием резервной копии журнала транзакций:
-   - продемонстрировать любую таблицу из любой БД, удалить несколько записей;
-   - вернуть базу в исходное состояние, используя восстановление из резервной копии.
-7. Произвести создание резервной копии журнала транзакций БД `Test`, внести изменения в любой объект БД и восстановить `Test` в исходное состояние.
-8. Решить задачу по выбору оптимальной стратегии резервного копирования для риэлтерской компании и описать процесс восстановления при аварии в среду утром.
+- Create a backup of the `master` database to removable media.
+- Using the `Test` database from Lab 02:
+  - create a full backup of `Test`;
+  - corrupt the data file, attempt to bring `Test` online;
+  - restore `Test` from the backup using `RESTORE`.
+- Repeat backup and restore using another server instance as the source device.
+- Provide an example of configuring database mirroring for any database.
+- Provide an example of creating a database snapshot for `Test2` with Transact‑SQL.
+- Simulate a logical error using a transaction log backup:
+  - show any table, delete several rows,
+  - restore the database to its original state using backup and log backup.
+- Propose a backup strategy for a real‑estate company with 5 working days and describe the recovery process after a server failure on Wednesday morning.[file:2]
 
-## Адаптация задания под Docker и sqlcmd
+## Docker adaptation
 
-Вместо локально установленного SQL Server и SSMS использована среда Docker на Ubuntu:
+- Default instance → container `mssql-default` (system databases + user database `Test`).
+- Named instance → container `mssql-named` (database `RZ_DB` and restored `Test_from_default`).[cite:26]
+- Backup directory inside containers: `/var/opt/mssql/backups`, mapped to `docker/backups/` on the host.
+- All operations are performed using `sqlcmd` inside containers and `docker exec` commands, without SSMS.[cite:26]
 
-- экземпляр SQL Server по умолчанию реализован контейнером `mssql-default`, в котором находятся системные базы (`master`, `msdb`, и т.д.) и пользовательская база `Test` (из ЛР2);[web:23]
-- именованный экземпляр реализован контейнером `mssql-named`, содержащим базу `RZ_DB` и восстановленную из резервной копии базу `Test_from_default`;
-- все операции выполняются через консольную утилиту `sqlcmd` внутри контейнеров и команды `docker exec`, без использования SSMS.[web:23][web:252]
+## Folder structure
 
-Путь для хранения резервных копий:
-
-- в контейнерах: `/var/opt/mssql/backups`;
-- на хосте этот каталог примонтирован через volume `./backups:/var/opt/mssql/backups` (папка `docker/backups`).
-
-## Структура лабораторной работы
-
-- `commands/` — последовательность использованных команд Docker и `sqlcmd`:
-  - `01-backup-master-and-test.md` — команды резервного копирования `master` и `Test`;
-  - `02-corrupt-test-and-restore.md` — перевод `Test` в OFFLINE, «повреждение» файла и восстановление;
-  - `03-backup-from-default-restore-on-named.md` — backup `Test` на `mssql-default` и restore на `mssql-named`;
-  - `04-log-backup-and-point-in-time-restore.md` — сценарий с журналом транзакций, DELETE и восстановлением;
-  - `05-rieltor-strategy-notes.md` — заметки по задаче про риэлторскую компанию.
-- `scripts/` — T‑SQL‑скрипты:
-  - `05-backup-master-and-test.sql` — команды `BACKUP DATABASE master` и `BACKUP DATABASE Test`;
-  - `06-restore-test-from-backup.sql` — команды `ALTER DATABASE ... SET OFFLINE`, попытка подключения и `RESTORE DATABASE Test`;
-  - `07-backup-test-on-default.sql` — backup `Test` для восстановления на другом экземпляре;
-  - `08-restore-test-on-named.sql` — `RESTORE DATABASE Test_from_default` в `mssql-named`;
-  - `09-log-backup-and-restore.sql` — backup журнала транзакций, DELETE из таблицы и восстановление;
-  - `10-snapshot-and-mirroring-examples.sql` — примеры T‑SQL для зеркальной копии и моментального снимка.
-- `report/` — оформленный отчёт:
-  - `report.md`.
-- `screenshots/` — скриншоты выполнения команд в терминале:
-  - `backup-master.png` — резервное копирование базы `master`;
-  - `backup-test-full-1.png` — резервное копирование базы `Test`;
-  - `test-offline.png` — перевод `Test` в OFFLINE;
-  - `test-online-error.png` — попытка перевести повреждённую `Test` в ONLINE и ошибка;
-  - `test-restored-ok.png` — успешное восстановление `Test` из бэкапа;
-  - `backup-test-for-named.png` — backup `Test` для восстановления на втором экземпляре;
-  - `backup-default-restore-named.png` — наличие базы `Test_from_default` в `mssql-named`;
-  - `log-full-backup.png`, `log-backup-1.png`, `log-scenario-delete.png`, `log-scenario-restored.png` — шаги сценария с журналом транзакций.
+```text
+labs/03-backup-and-recovery/
+  README.md                 ← this file
+  REPORT.md                 ← detailed lab report
+  lab03_commands.md         ← Docker + sqlcmd commands
+  scripts/                  ← T‑SQL scripts for this lab
+  screenshots/              ← backup/restore and log scenario evidence
+```
