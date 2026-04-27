@@ -56,12 +56,6 @@ This session captures `sql_batch_completed` events with duration ≥ 1 second, l
 The script was executed via `sqlcmd` inside `mssql-default`.  
 The final query confirmed that the session was running (`is_running = 1`).
 
-<p align="center">
-  <img src="screenshots/xevent-session-running.png" width="700" alt="Extended Events session TrackLongQueries running">
-  <br>
-  <em>Figure 1 — Extended Events session TrackLongQueries is active on the server.</em>
-</p>
-
 In a full SSMS environment, this `.xel` file can be opened using the Extended Events viewer, effectively serving the role of a trace based on a template for long‑running queries.
 
 ## 2. Monitoring active requests and waits using DMVs
@@ -119,20 +113,6 @@ docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
 - The first query lists currently executing requests, their status and elapsed time, along with the SQL text and XML execution plans returned by `sys.dm_exec_query_plan`.
 - The second query shows the top 10 wait types, helping to identify where the instance spends most waiting time.
 - The final query reports fragmented indexes in `ProjectDB`, which can be used to plan index maintenance.
-
-<p align="center">
-  <img src="screenshots/dm_exec_requests_plan.png" width="700" alt="Active requests with query plans">
-  <br>
-  <em>Figure 2 — Active requests and their plans from sys.dm_exec_requests and sys.dm_exec_query_plan.</em>
-</p>
-
-<p align="center">
-  <img src="screenshots/dm_os_wait_stats.png" width="700" alt="Top waits from sys.dm_os_wait_stats">
-  <br>
-  <em>Figure 3 — Top wait types and times on the instance, indicating resource usage patterns.</em>
-</p>
-
-Together with the Extended Events session, this satisfies the assignment’s requirement to use a system monitor and tracing to analyse server activity.
 
 ## 3. Preparing a large table OrderDetails in ProjectDB
 
@@ -207,14 +187,6 @@ GO
 
 The execution plan showed a scan over `OrderDetails` (clustered index scan on the primary key or table scan, depending on schema), indicating that no covering index supports the `ProductID`/`Quantity` aggregation.
 
-<p align="center">
-  <img src="screenshots/orderdetails-showplan-before.png" width="700" alt="Execution plan before indexes">
-  <br>
-  <em>Figure 4 — Execution plan for the aggregation query on OrderDetails before indexes are created (scan-based plan).</em>
-</p>
-
-This plan serves as the baseline for comparison.
-
 ## 5. Creating nonclustered and columnstore indexes
 
 ### 5.1. Script compare_plan_without_and_with_indexes.sql
@@ -278,19 +250,8 @@ The nonclustered index provides a more efficient access path for queries filtere
 
 After creating the indexes, the aggregation query was run again with an execution plan and `STATISTICS TIME` enabled. The plan now uses the columnstore index (`IX_OrderDetails_ColumnStore`) to perform the aggregation much more efficiently.
 
-<p align="center">
-  <img src="screenshots/orderdetails-showplan-after.png" width="700" alt="Execution plan after indexes">
-  <br>
-  <em>Figure 5 — Execution plan for the aggregation query on OrderDetails after nonclustered and columnstore indexes are created.</em>
-</p>
 
 The output of `SET STATISTICS TIME` was captured before and after indexing. After indexing, both CPU time and elapsed time for the aggregation query decreased, demonstrating the performance benefits of appropriate indexing on a large table.
-
-<p align="center">
-  <img src="screenshots/statistics-time-before-after.png" width="700" alt="STATISTICS TIME output before and after indexing">
-  <br>
-  <em>Figure 6 — Query CPU and elapsed time comparison before and after index creation.</em>
-</p>
 
 ## Conclusions
 
