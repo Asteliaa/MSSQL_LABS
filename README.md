@@ -4,6 +4,8 @@ This repository contains hands-on labs for Microsoft SQL Server administration.
 The environment is built around Ubuntu, Docker, and `sqlcmd` so the labs can be run locally
 without a dedicated database server or SSMS in the default workflow.
 
+Works were completed by student of group 320601 Ziamlianik R.V.
+
 ## What Is Included
 
 - A Docker environment with two SQL Server 2022 instances.
