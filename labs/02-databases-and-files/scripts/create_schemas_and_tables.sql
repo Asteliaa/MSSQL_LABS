@@ -1,4 +1,3 @@
--- This script is safe to run on both instances.
 -- It creates objects only in databases that exist on the current server.
 
 IF DB_ID(N'Test') IS NOT NULL

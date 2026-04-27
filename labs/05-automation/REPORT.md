@@ -463,7 +463,7 @@ The results show:
 <p align="center">
   <img src="screenshots/dbmail-profile-account.png" width="700" alt="Database Mail profile and account">
   <br>
-  <em>Figure 5 — Database Mail profile Lab5MailProfile and account Lab5MailAccount created in msdb.</em>
+  <em>Figure 4 — Database Mail profile Lab5MailProfile and account Lab5MailAccount created in msdb.</em>
 </p>
 
 This confirms that Database Mail has been configured according to the assignment.
@@ -550,7 +550,7 @@ The output shows a `.bak` file with a recent timestamp and appropriate size, ind
 <p align="center">
   <img src="screenshots/backup-job.png" width="700" alt="Full backup file Test_full_maintenance.bak">
   <br>
-  <em>Figure 6 — Full backup of Test created by Job_FullBackup_Test.</em>
+  <em>Figure 5 — Full backup of Test created by Job_FullBackup_Test.</em>
 </p>
 
 This job serves as a scripted equivalent of a maintenance plan for full database backups.

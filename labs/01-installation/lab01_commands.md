@@ -1,4 +1,4 @@
-# Lab 01 — Commands (Docker + sqlcmd)
+# Lab 01 — Commands
 
 ## Start both SQL Server containers
 

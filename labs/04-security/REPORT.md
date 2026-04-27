@@ -12,7 +12,7 @@
 The original lab assignment required the following tasks:
 
 1. Create a database `Test` for the exercises.
-2. Change the server authentication mode to Mixed (Windows + SQL Server Authentication).
+2. Change the server authentication mode to Mixed (Windows + SQL Server Authentication). In the Linux Docker environment this requirement is adapted to SQL Server Authentication with SQL logins, because Windows authentication is not used in the containerized setup.
 3. Create SQL login `TestLogin1` with a password:
    - add `TestLogin1` to the fixed server role `sysadmin`;
    - set database `Test` as the default database for `TestLogin1`.
@@ -32,7 +32,7 @@ The original lab assignment required the following tasks:
 
 The lab is executed in Docker on Ubuntu. The default SQL Server instance is provided by the `mssql-default` container, which hosts the `Test` database created in earlier labs.
 
-Authentication mode in the SQL Server Docker image is configured as Mixed, so SQL Server logins (`TestLogin1`, `TestLogin2`, etc.) can be created and used.
+The Linux Docker container uses SQL Server Authentication, so SQL Server logins (`TestLogin1`, `TestLogin2`, etc.) can be created and used.
 
 All scripts are stored under `labs/04-security/scripts/` in the project and are mounted into the container as `/var/opt/mssql/scripts/04-security/scripts/`.  
 Connections are made with `sqlcmd` as the `SA` login:
@@ -401,7 +401,7 @@ In this lab:
 ## Assignment coverage checklist
 
 1. Authentication mode + logins/users mapping:
-  - Mixed mode requirement is satisfied by container SQL Server configuration for SQL logins.
+  - The original Mixed-mode requirement is adapted to the Linux Docker setup by using SQL Server Authentication and SQL logins.
   - `TestLogin1`, `TestLogin2`, `TestUser1`, `TestUser2` are created and mapped.
   - `TestLogin1` is added to `sysadmin` and default DB is set to `Test`.
 2. User roles and restrictions:
