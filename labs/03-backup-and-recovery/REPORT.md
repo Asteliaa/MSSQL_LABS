@@ -377,3 +377,14 @@ The recovery process on a new server is:
 6. Generate the Tuesday report from the restored data.
 
 This algorithm uses the same mechanisms as in Task 7.1 (full + log backups and point‑in‑time recovery) and provides an optimal balance between backup overhead and recovery time.
+
+## Assignment coverage checklist
+
+1. Backup of `master` before other steps: implemented (`master_full_1.bak`).
+2. `Test` backup, corruption simulation and restore: implemented with OFFLINE + file deletion + RESTORE workflow.
+3. Backup/restore using another instance: implemented via backup on `mssql-default` and restore to `mssql-named` as `Test_from_default`.
+4. Database mirroring example: provided as T-SQL configuration example (conceptual, not fully deployed due to single-node Docker lab constraints).
+5. Snapshot example for `Test2`: provided as T-SQL example (conceptual unless `Test2` exists in runtime).
+6. Delete rows and recover state with log backups: implemented in `scripts/log_backup.sql`.
+7. Log backup + object/data changes + restore to original state: implemented via full+log restore sequence.
+8. Real-estate company backup strategy and Wednesday failure recovery algorithm: documented with justified full/differential/log schedule and recovery steps.

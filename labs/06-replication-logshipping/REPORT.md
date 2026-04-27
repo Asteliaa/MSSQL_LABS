@@ -5,11 +5,11 @@
 - Understand the main replication mechanisms in Microsoft SQL Server and how they can be used to distribute data across multiple servers.
 - Design a solution for data exchange between three servers (orders, suppliers, stock quotes) and a client.
 - Practically configure log shipping between two SQL Server instances in Docker using the `Test` database.
-- Demonstrate that changes on the primary server are applied to the secondary server using log backups.[file:8][web:193][web:200]
+- Demonstrate that changes on the primary server are applied to the secondary server using log backups.
 
 ## Original assignment
 
-The original task described the following scenario:[file:8]
+The original task described the following scenario:
 
 - You are a database administrator for the company **Company** using SQL Server 2012.
 - The company has several servers:
@@ -34,7 +34,7 @@ In this lab, replication and push subscriptions are considered conceptually, whi
 - Shared backup directory:
   - host: `docker/backups/`
   - container: `/var/opt/mssql/backups`.
-- Database `Test` is used as the source for log shipping, created in previous labs.[web:171][web:160]
+- Database `Test` is used as the source for log shipping, created in previous labs.
 
 T‑SQL scripts for this lab are stored in:
 
@@ -44,7 +44,6 @@ labs/06-replication-logshipping/scripts/
   init_secondary_for_log_shipping.sql
   configure_primary_log_shipping.sql
   configure_secondary_log_shipping.sql
-  demo_log_shipping_apply_changes.sql
 ```
 
 All scripts are executed with `sqlcmd` inside the containers using the `SA` login.
@@ -53,7 +52,7 @@ All scripts are executed with `sqlcmd` inside the containers using the `SA` logi
 
 ### 1.1. Replication types
 
-SQL Server supports several replication types with different use cases:[web:193][web:195][web:199]
+SQL Server supports several replication types with different use cases:
 
 - **Snapshot replication**:
   - Periodically creates a point‑in‑time snapshot of data on the Publisher and applies it to the Subscriber.
@@ -61,19 +60,19 @@ SQL Server supports several replication types with different use cases:[web:193]
 
 - **Transactional replication**:
   - Starts with an initial snapshot and then continuously propagates changes from the transaction log to subscribers with low latency.
-  - Ideal for high‑volume OLTP scenarios where subscribers need near real‑time data (for example, orders or stock quotes).[web:195]
+  - Ideal for high‑volume OLTP scenarios where subscribers need near real‑time data (for example, orders or stock quotes).
 
 - **Merge replication**:
   - Allows changes on both Publisher and Subscribers and then merges changes based on conflict resolution rules.
-  - Used when branch offices work offline and later synchronize with the central server.[web:199]
+  - Used when branch offices work offline and later synchronize with the central server.
 
-Replication uses a set of **agents** (Snapshot Agent, Log Reader Agent, Distribution Agent, Merge Agent) to generate snapshots, read changes from the log, and deliver them to subscribers.[web:193][web:195]
+Replication uses a set of **agents** (Snapshot Agent, Log Reader Agent, Distribution Agent, Merge Agent) to generate snapshots, read changes from the log, and deliver them to subscribers.
 
 ### 1.2. Push subscription
 
-A **push subscription** is a subscription in which the Distributor/Publisher is responsible for pushing changes to the Subscriber, rather than the Subscriber pulling changes.[web:193][web:195]
+A **push subscription** is a subscription in which the Distributor/Publisher is responsible for pushing changes to the Subscriber, rather than the Subscriber pulling changes.
 
-Configuration steps (in SSMS) typically include:[web:193][web:195]
+Configuration steps (in SSMS) typically include:
 
 1. Configure the Distributor on the Publisher server.
 2. Create a publication (snapshot or transactional) on the Publisher.
@@ -89,7 +88,7 @@ This model is appropriate when the Publisher has control over the delivery sched
 For the scenario with three servers and a client:
 
 - **Server 1 (orders) → Client**:
-  - Transactional replication with push subscriptions to provide near real‑time order updates to the client.[web:195]
+  - Transactional replication with push subscriptions to provide near real‑time order updates to the client.
   - Alternatively, snapshot replication with daily refresh if real‑time is not required.
 
 - **Server 2 (suppliers) → Client**:
@@ -97,21 +96,21 @@ For the scenario with three servers and a client:
   - Alternatively, ETL processes (e.g., SSIS) run nightly to refresh reference tables.
 
 - **Server 3 (stock quotes) → Client**:
-  - Transactional replication for continuous streaming of stock prices to the client.[web:195]
+  - Transactional replication for continuous streaming of stock prices to the client.
   - For less strict requirements, periodic ETL loads aggregating quotes at the end of the day.
 
 - **Data safety and high availability**:
   - Regular full/differential/log backups and test restores.
   - Log shipping or Always On / mirroring for warm standby servers.
-  - Monitoring of replication agents and backup jobs.[web:200]
+  - Monitoring of replication agents and backup jobs.
 
 In this lab, the multi‑server replication scenario is discussed conceptually, while log shipping is implemented between two instances as an example of data protection and offloading read workloads.
 
 ## 2. Log shipping concept and Docker simplification
 
-Log shipping in SQL Server is a high‑availability feature that continually sends transaction log backups from a primary database to one or more secondary databases.[web:200]
+Log shipping in SQL Server is a high‑availability feature that continually sends transaction log backups from a primary database to one or more secondary databases.
 
-Key components:[web:200]
+Key components:
 
 - **Primary server**: 
   - Database is in `FULL` or `BULK_LOGGED` recovery model.
@@ -120,19 +119,19 @@ Key components:[web:200]
   - Each secondary database is initialized from a full backup, restored with `NORECOVERY`.
   - Log backups are copied from the shared folder and restored in sequence.
 
-In a full production configuration, SQL Server Agent jobs perform backup, copy and restore automatically on defined schedules.[web:192][web:196]
+In a full production configuration, SQL Server Agent jobs perform backup, copy and restore automatically on defined schedules.
 
 In this Docker‑based lab:
 
 - Two instances (`mssql-default` and `mssql-named`) share the backup folder.
 - Standard log shipping configuration procedures `sp_add_log_shipping_primary_database`, `sp_add_log_shipping_secondary_primary`, `sp_add_log_shipping_secondary_database` are executed to register log shipping metadata.
-- Because SQL Server Agent is not fully used on the secondary, the actual backup and restore of log backups are demonstrated manually to show how changes flow from primary to secondary.[web:192][web:200]
+- Because SQL Server Agent is not fully used on the secondary, the actual backup and restore of log backups are demonstrated manually to show how changes flow from primary to secondary.
 
 ## 3. Step 1 — Preparing Test for log shipping on primary
 
 ### 3.1. Script init_primary_for_log_shipping.sql
 
-The script `init_primary_for_log_shipping.sql` sets up the `Test` database on the primary server (`mssql-default`) for log shipping:[cite:9]
+The script `init_primary_for_log_shipping.sql` sets up the `Test` database on the primary server (`mssql-default`) for log shipping:
 
 - switches `Test` to the FULL recovery model;
 - performs an initial log backup;
@@ -169,10 +168,10 @@ docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U SA -P "Strong_Passw0rd!" -C
 ```
 
-The `sqlcmd` output showed successful `BACKUP LOG` and `BACKUP DATABASE` operations to the shared backup folder `/var/opt/mssql/backups` on the primary container.[web:192][web:196]
+The `sqlcmd` output showed successful `BACKUP LOG` and `BACKUP DATABASE` operations to the shared backup folder `/var/opt/mssql/backups` on the primary container.
 
 <p align="center">
-  <img src="../screenshots/primary-backup-init.png" width="700" alt="Initial log and full backup for log shipping on primary">
+  <img src="screenshots/primary-backup-init.png" width="700" alt="Initial log and full backup for log shipping on primary">
   <br>
   <em>Figure 1 — Initial log and full backups of Test for log shipping initialization on the primary server.</em>
 </p>
@@ -181,7 +180,7 @@ The `sqlcmd` output showed successful `BACKUP LOG` and `BACKUP DATABASE` operati
 
 ### 4.1. Script init_secondary_for_log_shipping.sql
 
-On the secondary server (`mssql-named`), the script `init_secondary_for_log_shipping.sql` performs:[cite:9]
+On the secondary server (`mssql-named`), the script `init_secondary_for_log_shipping.sql` performs:
 
 - dropping any existing `Test` database;
 - restoring `Test` from the shared full backup using new file locations and leaving it in the `RESTORING` state with `NORECOVERY`.
@@ -229,10 +228,10 @@ docker exec -i mssql-named /opt/mssql-tools18/bin/sqlcmd \
   -S localhost,1433 -U SA -P "Strong_Passw0rd!" -C
 ```
 
-The output shows `Test` with `state_desc = RESTORING`, which is required for log shipping (the database is not yet accessible for user queries).[web:200]
+The output shows `Test` with `state_desc = RESTORING`, which is required for log shipping (the database is not yet accessible for user queries).
 
 <p align="center">
-  <img src="../screenshots/secondary-test-restoring.png" width="700" alt="Database Test in RESTORING state on secondary">
+  <img src="screenshots/secondary-test-restoring.png" width="700" alt="Database Test in RESTORING state on secondary">
   <br>
   <em>Figure 2 — Database Test restored in RESTORING state on the secondary server.</em>
 </p>
@@ -241,7 +240,7 @@ The output shows `Test` with `state_desc = RESTORING`, which is required for log
 
 ### 5.1. Script configure_primary_log_shipping.sql
 
-The script `configure_primary_log_shipping.sql` configures `Test` as a log shipping primary database on `mssql-default` using `sp_add_log_shipping_primary_database`:[cite:9][web:192]
+The script `configure_primary_log_shipping.sql` configures `Test` as a log shipping primary database on `mssql-default` using `sp_add_log_shipping_primary_database`:
 
 ```sql
 USE master;
@@ -267,7 +266,7 @@ EXEC master.dbo.sp_add_log_shipping_primary_database
 GO
 ```
 
-This registers the primary database and creates metadata for a log backup job (`LSBackup_Test`) in `msdb`.[web:196][web:200]
+This registers the primary database and creates metadata for a log backup job (`LSBackup_Test`) in `msdb`.
 
 ### 5.2. Execution and verification
 
@@ -297,7 +296,7 @@ The result shows:
 - `backup_directory = /var/opt/mssql/backups`.
 
 <p align="center">
-  <img src="../screenshots/primary-logshipping-primary-databases.png" width="700" alt="log_shipping_primary_databases for Test">
+  <img src="screenshots/log_shipping_primary_databases.png" width="700" alt="log_shipping_primary_databases for Test">
   <br>
   <em>Figure 3 — Test registered as a log shipping primary database on mssql-default.</em>
 </p>
@@ -308,7 +307,7 @@ This confirms that `Test` is configured as a log shipping primary database.
 
 ### 6.1. Script configure_secondary_log_shipping.sql
 
-On `mssql-named`, the script `configure_secondary_log_shipping.sql` performs two tasks:[cite:9][web:192]
+On `mssql-named`, the script `configure_secondary_log_shipping.sql` performs two tasks:
 
 1. Registers the primary server and database as a log shipping source using `sp_add_log_shipping_secondary_primary`.
 2. Registers `Test` as a secondary database using `sp_add_log_shipping_secondary_database`.
@@ -397,16 +396,16 @@ docker exec -i mssql-named /opt/mssql-tools18/bin/sqlcmd \
 The results show:
 
 - `primary_server = mssql-default`, `primary_database = Test` in `log_shipping_secondary`.
-- `secondary_database = Test`, `restore_mode = 0`, `restore_delay = 0` in `log_shipping_secondary_databases`.[web:200]
+- `secondary_database = Test`, `restore_mode = 0`, `restore_delay = 0` in `log_shipping_secondary_databases`.
 
 <p align="center">
-  <img src="../screenshots/secondary-logshipping-secondary.png" width="700" alt="log_shipping_secondary on secondary">
+  <img src="screenshots/secondary-logshipping-secondary.png" width="700" alt="log_shipping_secondary on secondary">
   <br>
   <em>Figure 4 — Primary/secondary relationship registered on mssql-named.</em>
 </p>
 
 <p align="center">
-  <img src="../screenshots/secondary-logshipping-secondary-databases.png" width="700" alt="log_shipping_secondary_databases for Test">
+  <img src="screenshots/secondary-logshipping-secondary-databases.png" width="700" alt="log_shipping_secondary_databases for Test">
   <br>
   <em>Figure 5 — Test registered as a log shipping secondary database on mssql-named.</em>
 </p>
@@ -424,7 +423,7 @@ Because SQL Server Agent is not running on the secondary in this Docker setup, t
 
 ### 7.1. Inserting test data in LogShipDemo on primary
 
-On `mssql-default`, a test table `dbo.LogShipDemo` was created and a row inserted:[cite:9]
+On `mssql-default`, a test table `dbo.LogShipDemo` was created and a row inserted:
 
 ```bash
 docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
@@ -452,7 +451,7 @@ EOF
 The result shows a single row with the test message and timestamp.
 
 <p align="center">
-  <img src="../screenshots/primary-logshipdemo-row.png" width="700" alt="LogShipDemo row on primary">
+  <img src="screenshots/primary-logshipdemo-row.png" width="700" alt="LogShipDemo row on primary">
   <br>
   <em>Figure 6 — Test row inserted into dbo.LogShipDemo on the primary server.</em>
 </p>
@@ -469,7 +468,7 @@ docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U SA -P "Strong_Passw0rd!" -C
 ```
 
-This produced a log backup file `Test_log_manual_1.trn` in the shared backups directory.[web:192][web:196]
+This produced a log backup file `Test_log_manual_1.trn` in the shared backups directory.
 
 ### 7.3. RESTORE LOG on secondary
 
@@ -506,25 +505,25 @@ docker exec -i mssql-named /opt/mssql-tools18/bin/sqlcmd \
 The result shows the same row that was inserted on the primary, with matching `Info` and `CreatedAt` values.
 
 <p align="center">
-  <img src="../screenshots/secondary-logshipdemo-row.png" width="700" alt="LogShipDemo row on secondary">
+  <img src="screenshots/secondary-logshipdemo-row.png" width="700" alt="LogShipDemo row on secondary">
   <br>
   <em>Figure 7 — Test row present in dbo.LogShipDemo on the secondary server after log restore.</em>
 </p>
 
-This confirms that log backups produced on the primary can be used to bring the secondary database up to date, which is the core mechanism of log shipping.[web:192][web:200]
+This confirms that log backups produced on the primary can be used to bring the secondary database up to date, which is the core mechanism of log shipping.
 
 ## Conclusions
 
 In this lab:
 
-- The main replication types supported by SQL Server (snapshot, transactional, merge) and the concept of push subscriptions were reviewed, and their application to a multi‑server scenario (orders, suppliers, stock quotes, client) was discussed.[web:193][web:195][web:199]
+- The main replication types supported by SQL Server (snapshot, transactional, merge) and the concept of push subscriptions were reviewed, and their application to a multi‑server scenario (orders, suppliers, stock quotes, client) was discussed.
 - A conceptual architecture was proposed in which:
   - transactional replication and/or ETL processes keep the client database synchronized with Server 1 and Server 3;
   - snapshot replication or ETL is used for Server 2 reference data;
   - backup/restore and log shipping provide data safety and disaster recovery.
-- Log shipping was configured between two Docker-based SQL Server instances (`mssql-default` as primary and `mssql-named` as secondary) using the standard procedures `sp_add_log_shipping_primary_database`, `sp_add_log_shipping_secondary_primary`, and `sp_add_log_shipping_secondary_database`.[web:192][web:196][web:200]
+- Log shipping was configured between two Docker-based SQL Server instances (`mssql-default` as primary and `mssql-named` as secondary) using the standard procedures `sp_add_log_shipping_primary_database`, `sp_add_log_shipping_secondary_primary`, and `sp_add_log_shipping_secondary_database`.
 - A full backup of `Test` was used to initialize the secondary database, and the database was left in `RESTORING` state as required for log shipping.
-- A manual test demonstrated that changes on the primary (`dbo.LogShipDemo` insertion) can be transferred to the secondary by performing a log backup on the primary and restoring the log on the secondary, confirming the data flow mechanism of log shipping.[web:192][web:200]
-- Due to the Docker environment and limited use of SQL Server Agent on the secondary, the copy/restore steps were executed manually; however, the fundamental behaviour of log shipping, as described in SQL Server documentation, was reproduced.[web:192][web:200]
+- A manual test demonstrated that changes on the primary (`dbo.LogShipDemo` insertion) can be transferred to the secondary by performing a log backup on the primary and restoring the log on the secondary, confirming the data flow mechanism of log shipping.
+- Due to the Docker environment and limited use of SQL Server Agent on the secondary, the copy/restore steps were executed manually; however, the fundamental behaviour of log shipping, as described in SQL Server documentation, was reproduced.
 
 This lab shows how replication concepts and log shipping can be combined to design robust, multi‑server data architectures and how log shipping can be configured and tested in a containerized SQL Server environment.

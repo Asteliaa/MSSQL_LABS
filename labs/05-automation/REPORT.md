@@ -57,7 +57,7 @@ After all subsequent steps, this query returns job names including:
 - `Job_OnSeverity16`
 - `Job_FullBackup_Test`.
 
-These jobs are created by the scripts described in the following sections and demonstrate that SQL Server Agent is correctly configured in the Docker container.[web:162]
+These jobs are created by the scripts described in the following sections and demonstrate that SQL Server Agent is correctly configured in the Docker container.
 
 <p align="center">
   <img src="screenshots/jobs-list.png" width="700" alt="List of SQL Server Agent jobs in msdb.sysjobs">
@@ -224,7 +224,7 @@ The output shows new rows in `JobLog` with `JobName = Job_LogDatabaseSize` and d
   <em>Figure 2 — Scheduled jobs writing to JobLog and Heartbeat tables in Test.</em>
 </p>
 
-This demonstrates two SQL Server Agent jobs running on a schedule and logging their activity in the `Test` database.[web:163][web:172]
+This demonstrates two SQL Server Agent jobs running on a schedule and logging their activity in the `Test` database.
 
 ## 3. Alert for error 50000 and job execution
 
@@ -466,7 +466,7 @@ The results show:
   <em>Figure 5 — Database Mail profile Lab5MailProfile and account Lab5MailAccount created in msdb.</em>
 </p>
 
-This confirms that Database Mail has been configured according to the assignment.[web:173]
+This confirms that Database Mail has been configured according to the assignment.
 
 ## 6. Full backup job for Test
 

@@ -5,16 +5,16 @@
 - Monitor SQL Server activity using Extended Events and dynamic management views (DMVs).
 - Analyse the behaviour of a SQL Server instance using tracing and query plans.
 - Create and compare execution plans for a query against a large table, with and without indexes.
-- Demonstrate the performance impact of a nonclustered index and a columnstore index on a large table.[file:9][web:205][web:204]
+- Demonstrate the performance impact of a nonclustered index and a columnstore index on a large table.
 
 ## Environment and database
 
 - SQL Server runs in the `mssql-default` Docker container.
 - The lab uses a user database `ProjectDB` instead of AdventureWorks2012.
-- A large table `ProjectDB.dbo.OrderDetails` is created and populated with 60,000 rows to simulate a workload.[cite:10]
+- A large table `ProjectDB.dbo.OrderDetails` is created and populated with 60,000 rows to simulate a workload.
 - All scripts are executed via `sqlcmd` inside the container, with optional graphical plan viewing in SSMS.
 
-The main scripts are stored in `labs/07-monitoring-and-indexing/scripts/`:
+The main scripts are stored in `labs/07-monitoring/scripts/`:
 
 - `create_long_queries_xevent_session.sql`
 - `monitor_requests_and_waits.sql`
@@ -25,7 +25,7 @@ The main scripts are stored in `labs/07-monitoring-and-indexing/scripts/`:
 
 ### 1.1. Creating and starting the TrackLongQueries session
 
-To implement tracing and monitoring of long‑running queries, an Extended Events session `TrackLongQueries` was created:[cite:10][web:201][web:205]
+To implement tracing and monitoring of long‑running queries, an Extended Events session `TrackLongQueries` was created:
 
 ```sql
 USE master;
@@ -51,24 +51,24 @@ WHERE name = 'TrackLongQueries';
 GO
 ```
 
-This session captures `sql_batch_completed` events with duration ≥ 1 second, logging the SQL text and database name to an `.xel` event file in the container.[web:201][web:205]
+This session captures `sql_batch_completed` events with duration ≥ 1 second, logging the SQL text and database name to an `.xel` event file in the container.
 
 The script was executed via `sqlcmd` inside `mssql-default`.  
 The final query confirmed that the session was running (`is_running = 1`).
 
 <p align="center">
-  <img src="../screenshots/xevent-session-running.png" width="700" alt="Extended Events session TrackLongQueries running">
+  <img src="screenshots/xevent-session-running.png" width="700" alt="Extended Events session TrackLongQueries running">
   <br>
   <em>Figure 1 — Extended Events session TrackLongQueries is active on the server.</em>
 </p>
 
-In a full SSMS environment, this `.xel` file can be opened using the Extended Events viewer, effectively serving the role of a trace based on a template for long‑running queries.[web:201][web:209]
+In a full SSMS environment, this `.xel` file can be opened using the Extended Events viewer, effectively serving the role of a trace based on a template for long‑running queries.
 
 ## 2. Monitoring active requests and waits using DMVs
 
 ### 2.1. Script monitor_requests_and_waits.sql
 
-The script `monitor_requests_and_waits.sql` collects information about active requests, their text and execution plans, as well as overall wait statistics:[cite:10][web:210][web:206]
+The script `monitor_requests_and_waits.sql` collects information about active requests, their text and execution plans, as well as overall wait statistics:
 
 ```sql
 USE master;
@@ -109,36 +109,36 @@ The script was executed with:
 ```bash
 cd ~/Projects/mssql-lab
 
-cat labs/07-monitoring-and-indexing/scripts/monitor_requests_and_waits.sql | \
+cat labs/07-monitoring/scripts/monitor_requests_and_waits.sql | \
 docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U SA -P "Strong_Passw0rd!" -C
 ```
 
 ### 2.2. Results
 
-- The first query lists currently executing requests, their status and elapsed time, along with the SQL text and XML execution plans returned by `sys.dm_exec_query_plan`.[web:210][web:206]
+- The first query lists currently executing requests, their status and elapsed time, along with the SQL text and XML execution plans returned by `sys.dm_exec_query_plan`.
 - The second query shows the top 10 wait types, helping to identify where the instance spends most waiting time.
 - The final query reports fragmented indexes in `ProjectDB`, which can be used to plan index maintenance.
 
 <p align="center">
-  <img src="../screenshots/dm_exec_requests_plan.png" width="700" alt="Active requests with query plans">
+  <img src="screenshots/dm_exec_requests_plan.png" width="700" alt="Active requests with query plans">
   <br>
   <em>Figure 2 — Active requests and their plans from sys.dm_exec_requests and sys.dm_exec_query_plan.</em>
 </p>
 
 <p align="center">
-  <img src="../screenshots/dm_os_wait_stats.png" width="700" alt="Top waits from sys.dm_os_wait_stats">
+  <img src="screenshots/dm_os_wait_stats.png" width="700" alt="Top waits from sys.dm_os_wait_stats">
   <br>
   <em>Figure 3 — Top wait types and times on the instance, indicating resource usage patterns.</em>
 </p>
 
-Together with the Extended Events session, this satisfies the assignment’s requirement to use a system monitor and tracing to analyse server activity.[web:205][web:210]
+Together with the Extended Events session, this satisfies the assignment’s requirement to use a system monitor and tracing to analyse server activity.
 
 ## 3. Preparing a large table OrderDetails in ProjectDB
 
 ### 3.1. Script prepare_orderdetails_data.sql
 
-To emulate a table with more than 50,000 rows, the script `prepare_orderdetails_data.sql` creates and populates `ProjectDB.dbo.OrderDetails`:[cite:10]
+To emulate a table with more than 50,000 rows, the script `prepare_orderdetails_data.sql` creates and populates `ProjectDB.dbo.OrderDetails`:
 
 ```sql
 USE [ProjectDB];
@@ -174,7 +174,7 @@ The script was executed via `sqlcmd`, and a check confirmed that the table conta
 SELECT COUNT(*) AS RowCount FROM ProjectDB.dbo.OrderDetails;
 ```
 
-This table is used in subsequent steps to evaluate query performance and execution plans before and after indexing.[web:203]
+This table is used in subsequent steps to evaluate query performance and execution plans before and after indexing.
 
 ## 4. Execution plan for query without additional indexes
 
@@ -187,7 +187,7 @@ GROUP BY ProductID;
 ```
 
 In SSMS, the **Show Actual Execution Plan** feature was enabled and the query run against `ProjectDB`.  
-As an alternative, a textual plan was obtained using `SET SHOWPLAN_TEXT`:[web:207]
+As an alternative, a textual plan was obtained using `SET SHOWPLAN_TEXT`:
 
 ```sql
 USE [ProjectDB];
@@ -208,7 +208,7 @@ GO
 The execution plan showed a scan over `OrderDetails` (clustered index scan on the primary key or table scan, depending on schema), indicating that no covering index supports the `ProductID`/`Quantity` aggregation.
 
 <p align="center">
-  <img src="../screenshots/orderdetails-showplan-before.png" width="700" alt="Execution plan before indexes">
+  <img src="screenshots/orderdetails-showplan-before.png" width="700" alt="Execution plan before indexes">
   <br>
   <em>Figure 4 — Execution plan for the aggregation query on OrderDetails before indexes are created (scan-based plan).</em>
 </p>
@@ -219,7 +219,7 @@ This plan serves as the baseline for comparison.
 
 ### 5.1. Script compare_plan_without_and_with_indexes.sql
 
-To improve performance and demonstrate index impact, the script `compare_plan_without_and_with_indexes.sql` was executed:[cite:10][web:204][web:208]
+To improve performance and demonstrate index impact, the script `compare_plan_without_and_with_indexes.sql` was executed:
 
 ```sql
 USE [ProjectDB];
@@ -272,22 +272,22 @@ SET STATISTICS TIME OFF;
 GO
 ```
 
-The nonclustered index provides a more efficient access path for queries filtered or grouped by `Quantity`, while the columnstore index is optimized for analytic workloads on large tables, especially aggregations over many rows.[web:204][web:208]
+The nonclustered index provides a more efficient access path for queries filtered or grouped by `Quantity`, while the columnstore index is optimized for analytic workloads on large tables, especially aggregations over many rows.
 
 ### 5.2. Execution plan and performance after indexes
 
 After creating the indexes, the aggregation query was run again with an execution plan and `STATISTICS TIME` enabled. The plan now uses the columnstore index (`IX_OrderDetails_ColumnStore`) to perform the aggregation much more efficiently.
 
 <p align="center">
-  <img src="../screenshots/orderdetails-showplan-after.png" width="700" alt="Execution plan after indexes">
+  <img src="screenshots/orderdetails-showplan-after.png" width="700" alt="Execution plan after indexes">
   <br>
   <em>Figure 5 — Execution plan for the aggregation query on OrderDetails after nonclustered and columnstore indexes are created.</em>
 </p>
 
-The output of `SET STATISTICS TIME` was captured before and after indexing. After indexing, both CPU time and elapsed time for the aggregation query decreased, demonstrating the performance benefits of appropriate indexing on a large table.[web:203][web:204]
+The output of `SET STATISTICS TIME` was captured before and after indexing. After indexing, both CPU time and elapsed time for the aggregation query decreased, demonstrating the performance benefits of appropriate indexing on a large table.
 
 <p align="center">
-  <img src="../screenshots/statistics-time-before-after.png" width="700" alt="STATISTICS TIME output before and after indexing">
+  <img src="screenshots/statistics-time-before-after.png" width="700" alt="STATISTICS TIME output before and after indexing">
   <br>
   <em>Figure 6 — Query CPU and elapsed time comparison before and after index creation.</em>
 </p>
@@ -296,9 +296,9 @@ The output of `SET STATISTICS TIME` was captured before and after indexing. Afte
 
 In Lab 07:
 
-- An Extended Events session `TrackLongQueries` was created and started, capturing long‑running batches into an event file and verified via `sys.dm_xe_sessions`, serving as a trace mechanism based on a long‑query template.[web:201][web:205]
-- Dynamic management views `sys.dm_exec_requests`, `sys.dm_exec_query_plan`, and `sys.dm_os_wait_stats` were used to monitor active requests, inspect query plans, and review server wait statistics, effectively acting as a system monitor for SQL Server activity.[web:206][web:210]
+- An Extended Events session `TrackLongQueries` was created and started, capturing long‑running batches into an event file and verified via `sys.dm_xe_sessions`, serving as a trace mechanism based on a long‑query template.
+- Dynamic management views `sys.dm_exec_requests`, `sys.dm_exec_query_plan`, and `sys.dm_os_wait_stats` were used to monitor active requests, inspect query plans, and review server wait statistics, effectively acting as a system monitor for SQL Server activity.
 - A synthetic large table `ProjectDB.dbo.OrderDetails` with 60,000 rows was created to emulate a high‑volume workload.
 - An aggregation query on `OrderDetails` was executed without additional indexes, and its execution plan (scan‑based) was captured as a baseline.
-- A nonclustered index and a columnstore index were created on `OrderDetails`, and the same query was executed again. The new execution plan used the indexes, and `STATISTICS TIME` showed improved CPU and elapsed times, confirming the performance benefits of indexing on large tables.[web:203][web:204][web:208]
+- A nonclustered index and a columnstore index were created on `OrderDetails`, and the same query was executed again. The new execution plan used the indexes, and `STATISTICS TIME` showed improved CPU and elapsed times, confirming the performance benefits of indexing on large tables.
 - Overall, the lab demonstrated how monitoring tools (Extended Events, DMVs) and indexing techniques can be combined to analyse and optimize query performance in SQL Server.

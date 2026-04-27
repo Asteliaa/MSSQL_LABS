@@ -97,3 +97,14 @@ All shell commands used in the lab are documented in `lab01_commands.md` for rep
 The installation lab was successfully adapted from a Hyper‑V + SSMS environment to a Docker + Ubuntu + sqlcmd workflow. Two independent SQL Server instances were deployed in containers, their metadata was validated using T‑SQL from a dedicated script, and basic engine lifecycle operations were performed using Docker commands only.
 
 This demonstrates that essential SQL Server administration tasks can be practised in a fully containerized environment without relying on graphical tools, making the lab reproducible on any development machine with Docker installed.
+
+## Assignment coverage checklist
+
+1. VM creation in Hyper-V (CPU/RAM/HDD/Windows Server): adapted to Ubuntu host + Docker.
+2. Default SQL Server instance installation: implemented as container `mssql-default`.
+3. SSMS interface familiarization: adapted to `sqlcmd` CLI workflow.
+4. Instance properties review: covered by metadata queries from `scripts/check_server_metadata.sql`.
+5. Server stop/start from SSMS: adapted to `docker compose stop/start` for `mssql_default`.
+6. Second named instance installation: implemented as container `mssql-named`.
+7. Second instance configuration: verified by successful connection and metadata checks.
+8. Connection via a dedicated port: implemented and validated through host port `1434` mapped to `mssql-named`.

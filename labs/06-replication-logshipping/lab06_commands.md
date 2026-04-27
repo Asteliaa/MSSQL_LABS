@@ -206,4 +206,4 @@ Expected: the same row inserted on the primary appears on the secondary.
 
 Screenshot: `secondary-logshipdemo-row.png`.
 
-This manual sequence demonstrates that changes on the primary can be delivered to the secondary via log backups, which is the core idea of log shipping.[web:192][web:200]
+This manual sequence demonstrates that changes on the primary can be delivered to the secondary via log backups, which is the core idea of log shipping.

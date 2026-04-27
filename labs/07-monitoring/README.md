@@ -16,7 +16,7 @@ Using the training database (in this lab adapted to `ProjectDB` instead of Adven
 3. Execute a query against a table containing more than 50,000 rows and display the graphical execution plan in SSMS.
 4. Create a nonclustered index and a columnstore index for that table.
 5. Execute the same query against the modified table and display the execution plan.
-6. Compare query performance without indexes and with indexes.[file:9]
+6. Compare query performance without indexes and with indexes.
 
 ## Docker adaptation
 
@@ -29,10 +29,10 @@ Using the training database (in this lab adapted to `ProjectDB` instead of Adven
 ## Folder structure
 
 ```text
-labs/07-monitoring-and-indexing/
+labs/07-monitoring/
   README.md
   REPORT.md
-  lab07_commands.md
+  07_commands.md
   scripts/
   screenshots/
 ```

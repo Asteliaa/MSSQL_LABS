@@ -391,9 +391,26 @@ This confirms that Task 4.2 is satisfied: users `User1` and `User2` belong to ro
 
 In this lab:
 
-- SQL Server logins `TestLogin1` and `TestLogin2` were created with SQL Server Authentication, and database users `TestUser1` and `TestUser2` were created in `Test` and mapped to these logins.[3]
+- SQL Server logins `TestLogin1` and `TestLogin2` were created with SQL Server Authentication, and database users `TestUser1` and `TestUser2` were created in `Test` and mapped to these logins.
 - `TestLogin1` was added to the fixed server role `sysadmin`, and `Test` was set as its default database.
 - Custom roles `Manager`, `Employee` and `NoUpdate` were created in `Test`, with appropriate membership and permission restrictions, including `DENY ALTER` on the `guest` user for `Employee` and `DENY UPDATE` for `NoUpdate`.
 - A new schema `mgr` owned by `TestUser1` and a table `mgr.Orders` were created, meeting the requirements of Task 4.1.
 - Additional users `User1` and `User2` were created and added to role `Manager`, and two different mechanisms (direct user‑level DENY and role‑based DENY) were used to deny them `SELECT` on `mgr.Orders`, fulfilling Task 4.2.
 - All operations were performed using Transact‑SQL and the `sqlcmd` utility in a Docker‑hosted SQL Server instance, demonstrating that security administration tasks can be executed without SSMS.
+
+## Assignment coverage checklist
+
+1. Authentication mode + logins/users mapping:
+  - Mixed mode requirement is satisfied by container SQL Server configuration for SQL logins.
+  - `TestLogin1`, `TestLogin2`, `TestUser1`, `TestUser2` are created and mapped.
+  - `TestLogin1` is added to `sysadmin` and default DB is set to `Test`.
+2. User roles and restrictions:
+  - Roles `Manager` and `Employee` are created.
+  - `TestUser1` assigned to `Manager`, `TestUser2` assigned to `Employee`.
+  - `DENY ALTER ON USER::guest TO Employee` applied.
+3. Additional role with denied updates:
+  - Role `NoUpdate` created and `DENY UPDATE` applied.
+4. Task 4.1 and 4.2:
+  - Schema `mgr` owned by `TestUser1` and table `mgr.Orders` created.
+  - Users `User1` and `User2` created, added to `Manager`.
+  - `SELECT` denied on `mgr.Orders` by direct and role-based methods.

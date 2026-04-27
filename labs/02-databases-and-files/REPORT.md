@@ -99,3 +99,13 @@ All Docker and sqlcmd commands used to run these scripts are documented in `lab0
 In this lab the `Test` database was created with a primary data file, a secondary data file and a dedicated filegroup `TestFileGroup`, matching the original specification for size and autogrowth settings. The configuration was validated using dynamic management views for database files and filegroups.
 
 Custom schemas and tables were created in both `Test` and `RZ_DB`, including a table explicitly bound to a non‑default filegroup and a table in a schema that does not match the current user. All tasks were performed via T‑SQL and `sqlcmd` inside Docker containers, demonstrating that database and file management tasks from the original SSMS‑based lab can be fully reproduced in a containerized Linux environment.
+
+## Assignment coverage checklist
+
+1. `Test` in default instance with `testdata_a` 4 MB, growth 2 MB, max 10 MB: implemented in `scripts/create_test_database.sql`.
+2. `TestFileGroup` + `testdata_b.ndf` 5 MB, growth 2 MB, unlimited: implemented in `scripts/create_test_database.sql`.
+3. Named-instance database with initials (`RZ_DB`): implemented in `scripts/create_rz_database.sql` and executed on `mssql-named`.
+4. Schema and tables in created databases:
+  - `TABLE_1` in custom schema: implemented (`app.TABLE_1`).
+  - `TABLE_2` with explicit filegroup: implemented (`app.TABLE_2 ON TestFileGroup`).
+5. Table in a new schema not owned by current user: implemented via `external.TABLE_3` in schema `external`.

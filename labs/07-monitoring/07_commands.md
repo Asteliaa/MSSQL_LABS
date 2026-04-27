@@ -9,7 +9,7 @@ Run the script `create_long_queries_xevent_session.sql`:
 ```bash
 cd ~/Projects/mssql-lab
 
-cat labs/07-monitoring-and-indexing/scripts/create_long_queries_xevent_session.sql | \
+cat labs/07-monitoring/scripts/create_long_queries_xevent_session.sql | \
 docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U SA -P "Strong_Passw0rd!" -C
 ```
@@ -30,7 +30,7 @@ Run the script `monitor_requests_and_waits.sql`:
 ```bash
 cd ~/Projects/mssql-lab
 
-cat labs/07-monitoring-and-indexing/scripts/monitor_requests_and_waits.sql | \
+cat labs/07-monitoring/scripts/monitor_requests_and_waits.sql | \
 docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U SA -P "Strong_Passw0rd!" -C
 ```
@@ -53,7 +53,7 @@ Run `prepare_orderdetails_data.sql`:
 ```bash
 cd ~/Projects/mssql-lab
 
-cat labs/07-monitoring-and-indexing/scripts/prepare_orderdetails_data.sql | \
+cat labs/07-monitoring/scripts/prepare_orderdetails_data.sql | \
 docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U SA -P "Strong_Passw0rd!" -C
 ```
@@ -100,7 +100,7 @@ Run `compare_plan_without_and_with_indexes.sql`:
 ```bash
 cd ~/Projects/mssql-lab
 
-cat labs/07-monitoring-and-indexing/scripts/compare_plan_without_and_with_indexes.sql | \
+cat labs/07-monitoring/scripts/compare_plan_without_and_with_indexes.sql | \
 docker exec -i mssql-default /opt/mssql-tools18/bin/sqlcmd \
   -S localhost -U SA -P "Strong_Passw0rd!" -C
 ```
