@@ -15,7 +15,7 @@ GO
 ALTER EVENT SESSION [TrackLongQueries] ON SERVER STATE = START;
 GO
 
-SELECT name, is_running 
+SELECT name, create_time 
 FROM sys.dm_xe_sessions
 WHERE name = 'TrackLongQueries';
 GO

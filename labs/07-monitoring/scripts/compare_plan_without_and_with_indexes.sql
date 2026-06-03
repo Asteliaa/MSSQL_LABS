@@ -1,4 +1,4 @@
-USE [ProjectDB];
+USE [master];
 GO
 
 IF NOT EXISTS (

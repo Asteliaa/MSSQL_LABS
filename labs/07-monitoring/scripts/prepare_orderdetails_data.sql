@@ -1,4 +1,4 @@
-USE [ProjectDB];
+USE [master];
 GO
 
 IF OBJECT_ID('dbo.OrderDetails', 'U') IS NULL
