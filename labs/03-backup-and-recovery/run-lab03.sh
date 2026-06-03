@@ -14,7 +14,7 @@ run_sql_file mssql-default /var/opt/mssql/scripts/03-backup-and-recovery/scripts
 
 echo "-- Copy Test from default to named instance --"
 run_sql_file mssql-default /var/opt/mssql/scripts/03-backup-and-recovery/scripts/copy_test_to_named_instance.sql
-run_sql_file mssql-named /var/opt/mssql/scripts/03-backup-and-recovery/scripts/copy_test_to_named_instance.sql
+run_sql_file mssql-named /var/opt/mssql/scripts/03-backup-and-recovery/scripts/restore_test_on_named.sql
 
 echo "-- Log backup and point-in-time restore --"
 run_sql_file mssql-default /var/opt/mssql/scripts/03-backup-and-recovery/scripts/log_backup.sql

@@ -6,6 +6,9 @@ source "$(cd "$(dirname "$0")" && pwd)/common.sh"
 echo "== Lab 04 =="
 compose_up
 
+echo "-- Cleanup public permissions --"
+run_sql_query mssql-default "USE Test; REVOKE SELECT FROM public;"
+
 echo "-- Create logins and users --"
 run_sql_file mssql-default /var/opt/mssql/scripts/04-security/scripts/create_logins_and_users.sql
 
