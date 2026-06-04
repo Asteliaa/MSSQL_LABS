@@ -54,4 +54,4 @@ WHERE j.name = N'Job_FullBackup_Test'
     EXEC sp_add_jobserver
         @job_name    = N'Job_FullBackup_Test',
         @server_name = N'(LOCAL)';
-GO
+GO  
