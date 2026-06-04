@@ -13,8 +13,11 @@ echo "-- Create RZ_DB on mssql-named --"
 run_sql_file mssql-named /var/opt/mssql/scripts/02-databases-and-files/scripts/create_rz_database.sql
 
 echo "-- Create schemas and tables on both instances --"
-run_sql_file mssql-default /var/opt/mssql/scripts/02-databases-and-files/scripts/create_schemas_and_tables.sql
-run_sql_file mssql-named /var/opt/mssql/scripts/02-databases-and-files/scripts/create_schemas_and_tables.sql
+echo "-- Create schemas and tables on mssql-default --"
+run_sql_file mssql-default /var/opt/mssql/scripts/02-databases-and-files/scripts/create_schemas_and_tables_default.sql
+
+echo "-- Create schemas and tables on mssql-named --"
+run_sql_file mssql-named /var/opt/mssql/scripts/02-databases-and-files/scripts/create_schemas_and_tables_named.sql
 
 echo "-- Verify files, filegroups and tables --"
 run_sql_file mssql-default /var/opt/mssql/scripts/02-databases-and-files/scripts/verify_files_filegroups_and_tables.sql

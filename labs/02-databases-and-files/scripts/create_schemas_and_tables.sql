@@ -26,12 +26,12 @@ BEGIN
         ON TestFileGroup;
     END;
 
-    IF SCHEMA_ID(N''external'') IS NULL
-        EXEC(N''''CREATE SCHEMA external AUTHORIZATION dbo;'''');
+    IF SCHEMA_ID(N''[external]'') IS NULL
+        EXEC(N''''CREATE SCHEMA [external] AUTHORIZATION dbo;'''');
 
-    IF OBJECT_ID(N''external.TABLE_3'', N''U'') IS NULL
+    IF OBJECT_ID(N''[external].TABLE_3'', N''U'') IS NULL
     BEGIN
-        CREATE TABLE external.TABLE_3
+        CREATE TABLE [external].TABLE_3
         (
             Id      INT IDENTITY(1,1) PRIMARY KEY,
             Comment NVARCHAR(200) NULL
